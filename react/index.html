@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <script src="https://cdn.bootcdn.net/ajax/libs/babel-polyfill/7.12.1/polyfill.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/babel-standalone/7.0.0-beta.3/babel.min.js"></script>
+</head>
+<body>
+<div id="example"></div>
+<!--<script type="text/babel">
+  const compsButton = React.createElement(() => {
+    const {useEffect, useRef, useState} = window.React;
+
+    const [state, upState] = useState({num: 1});
+
+    const fun = {
+      update() {
+        state.num++;
+        upState({...state});
+      },
+    };
+    useEffect(() => {
+      console.log(state.num);
+    }, [state]);
+    return <button onClick={fun.update}>{state.num}</button>;
+  });
+
+  ReactDOM.render(<h1>{compsButton}</h1>, document.getElementById("example"));
+</script>-->
+<script type="text/babel" src="index.js"></script>
+</body>
+</html>
