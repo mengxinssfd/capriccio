@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+      user-card {
+          display: block;
+          height: 200px;
+          background: black;
+      }
+  </style>
+</head>
+<body>
+<input type="range">
+<user-card></user-card>
+<template id="my-card-template">
+  <style>
+      /*必须写在template里面  写在外面不生效*/
+      .my-card {
+          width: 300px;
+          height: 300px;
+          background: #fff;
+          box-shadow: 1px 2px 10px rgba(0, 0, 0, .3);
+          margin: 10px
+      }
+
+      .title {
+          height: 40px;
+          background: #dcdcdc;
+          line-height: 40px;
+          text-align: center;
+      }
+
+      pre {
+          padding: 20px;
+      }
+  </style>
+  <div class="my-card">
+    <div class="title">
+      <slot name="title">代码标题</slot>
+    </div>
+    <pre>
+        <slot name="content">代码内容</slot>
+      </pre>
+  </div>
+</template>
+<my-card>
+  <span slot="title">我是代码标题</span>
+  <p slot="content">
+    const a = 1;
+    console.log(a)
+  </p>
+</my-card>
+<script>
+class UserCard extends HTMLElement {
+  constructor() {
+    super();
+    this.addEventListener('click', e => {
+      this.toggleCard();
+    });
+  }
+
+  toggleCard() {
+    console.log("Element was clicked!");
+  }
+}
+
+customElements.define('user-card', UserCard);
+</script>
+<script>
+class MyCard extends HTMLElement {
+  constructor(props) {
+    super();
+    const {content: temp} = document.querySelector('#my-card-template');
+    this.attachShadow({mode: 'open'}).appendChild(temp.cloneNode(true));
+  }
+}
+
+customElements.define('my-card', MyCard);
+</script>
+</body>
+</html>
