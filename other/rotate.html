@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>3D图片旋转</title>
+  <style>
+      * {
+          margin: 0;
+          padding: 0;
+          pointer-events: none;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -o-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+      }
+
+      body {
+          background: #000;
+      }
+
+      dl {
+          width: 230px;
+          height: 340px;
+          position: relative;
+          margin: 150px auto 0;
+          -webkit-transform-style: -webkit-preserve-3d;
+          transform-style: preserve-3d;
+      }
+
+      dd {
+          width: 230px;
+          height: 340px;
+          position: absolute;
+          top: 0;
+          left: 0;
+      }
+
+      img {
+          width: 100%;
+          height: 100%;
+      }
+
+      dt {
+          width: 900px;
+          height: 900px;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%) rotateX(90deg) translateZ(-200px);
+          background: -moz-radial-gradient(center center, farthest-side, #fff5, #0005);
+          background: -webkit-radial-gradient(center center, farthest-side, #fff5, #0005);
+          background: -o-radial-gradient(center center, farthest-side, #fff5, #0005);
+          background: radial-gradient(center center, farthest-side, #fff5, #0005);
+      }
+
+      .inverteds {
+          transform: scaleY(-1);
+          position: absolute;
+          left: 0;
+          top: 370px;
+          width: 230px;
+          height: 340px;
+          opacity: 0.5;
+      }
+
+      .inverted {
+          position: relative;
+          width: 230px;
+          height: 340px;
+
+      }
+
+      .inverted::before {
+          content: '';
+          display: block;
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          background: -moz-radial-gradient(bottom, circle farthest-side, #0000, #000 66%);
+          background: -webkit-radial-gradient(bottom, circle farthest-side, #0000, #000 66%);
+          background: -o-radial-gradient(bottom, circle farthest-side, #0000, #000 66%);
+          background: radial-gradient(bottom, circle farthest-side, #0000, #000 66%);
+      }
+
+  </style>
+
+</head>
+<body>
+
+<dl>
+  <dt></dt>
+  <dd>
+    <img src="http://v.bootstrapmb.com/2019/5/2g3s4997/img/t1.png"/>
+  </dd>
+  <dd>
+    <img src="http://v.bootstrapmb.com/2019/5/2g3s4997/img/t2.png"/>
+  </dd>
+  <dd>
+    <img src="http://v.bootstrapmb.com/2019/5/2g3s4997/img/t3.png"/>
+  </dd>
+  <dd>
+    <img src="http://v.bootstrapmb.com/2019/5/2g3s4997/img/t4.png"/>
+  </dd>
+  <dd>
+    <img src="http://v.bootstrapmb.com/2019/5/2g3s4997/img/t5.png"/>
+  </dd>
+  <dd>
+    <img src="http://v.bootstrapmb.com/2019/5/2g3s4997/img/t6.png"/>
+  </dd>
+  <dd>
+    <img src="http://v.bootstrapmb.com/2019/5/2g3s4997/img/t1.png"/>
+  </dd>
+  <dd>
+    <img src="http://v.bootstrapmb.com/2019/5/2g3s4997/img/t2.png"/>
+  </dd>
+  <dd>
+    <img src="http://v.bootstrapmb.com/2019/5/2g3s4997/img/t3.png"/>
+  </dd>
+  <dd>
+    <img src="http://v.bootstrapmb.com/2019/5/2g3s4997/img/t4.png"/>
+  </dd>
+</dl>
+<script src="https://cdn.jsdelivr.net/npm/@mxssfd/ts-utils@2.11.21/lib-umd/index.min.js"></script>
+<script>
+window.onload = function() {
+  const dds = document.getElementsByTagName('dd');
+  const dl = document.getElementsByTagName('dl')[0];
+  dl.style.transform = "rotateX(-10deg) rotateY(0deg)";
+  for(let i = 0; i < dds.length; i++) {
+    /* const inverted = document.createElement('div');
+     const inverteds = document.createElement('div');
+     const img = document.createElement('img');
+     img.src = dds[i].getElementsByTagName('img')[0].src;
+     inverted.appendChild(img);
+     inverted.className = 'inverted';
+     inverteds.appendChild(inverted);
+     inverteds.className = 'inverteds';
+     dds[i].appendChild(inverteds);*/
+
+    tsUtils.createHtmlElement("div", {
+      props: {
+        className: 'inverteds'
+      },
+      children: [
+        tsUtils.createHtmlElement("div", {
+          props: {
+            className: "inverted"
+          },
+          children: [
+            tsUtils.createHtmlElement("img", {
+              props: {
+                src: dds[i].getElementsByTagName('img')[0].src
+              }
+            })
+          ]
+        })
+      ],
+      parent: dds[i]
+    });
+  }
+  deal(dds, dds.length - 1);
+  const reg = /rotateX\((-?\d+\.?\d*)deg\) rotateY\((-?\d+\.?\d*)deg\)/;
+
+  function getRotate() {
+    const obj = {x: 0, y: 0};
+    if(reg.test(dl.style.transform)) {
+      obj.x = parseFloat(RegExp.$1);
+      obj.y = parseFloat(RegExp.$2);
+    }
+    return obj;
+  }
+
+  tsUtils.onDragEvent((hook) => {
+    let rotate = {x: 0, y: 0};
+    hook.onDown(() => {
+      rotate = getRotate();
+    });
+    hook.onMove((e, currentXY, lastXY, downXY) => {
+      let x = rotate.x - (currentXY.y - downXY.y);
+      let y = rotate.y + (currentXY.x - downXY.x);
+      if(!tsUtils.inRange(x, [-360, 360])) x %= 360;
+      if(!tsUtils.inRange(y, [-360, 360])) y %= 360;
+      dl.style.transform = "rotateX(" + x + "deg) rotateY(" + y + "deg)";
+    });
+  });
+
+
+  /*window.onmousedown = function(e) {
+    const mouseX = e.clientX, mouseY = e.clientY;
+    const transform = dl.style.transform;
+    let rotateX = transform.substr(transform.indexOf('rotateX(') + 8);
+    let rotateY = transform.substr(transform.indexOf('rotateY(') + 8);
+    rotateX = parseInt(rotateX.substring(0, rotateX.indexOf('deg')));
+    rotateY = parseInt(rotateY.substring(0, rotateY.indexOf('deg')));
+    window.onmousemove = function(e) {
+      let x = rotateX - (e.clientY - mouseY);
+      let y = rotateY + (e.clientX - mouseX);
+      // if(x > 360 || x < -360)
+      if(!tsUtils.inRange(x, [-360, 360]))
+        x %= 360;
+      // if(y > 360 || y < -360)
+      if(!tsUtils.inRange(y, [-360, 360]))
+        y %= 360;
+      dl.style.transform = "rotateX(" + x + "deg) rotateY(" + y + "deg)";
+    };
+    window.onmouseup = function() {
+      window.onmousemove = null;
+    };
+  };*/
+
+  function deal(dds, n) {
+    const speed = 100;
+    const translateZTerminus = 400;
+    const angle = 360 / dds.length * n;
+    let translateZ = 0;
+    let rotateY = 0;
+    const time = setInterval(function() {
+      translateZ += translateZTerminus / speed * 10;
+      rotateY += angle / speed * 10;
+      dds[n].style.transform = 'rotateY(' + rotateY + 'deg) translateZ(' + translateZ + 'px)';
+      if(rotateY >= angle && translateZ >= translateZTerminus) {
+        clearInterval(time);
+        dds[n].style.transform = 'rotateY(' + angle + 'deg) translateZ(' + translateZTerminus + 'px)';
+        if(n > 0)
+          deal(dds, n - 1);
+
+        const obj = getRotate();
+        let rotY = obj.y;
+        setInterval(() => {
+          dl.style.transform = `rotateX(${obj.x}deg) rotateY(${(rotY += 0.1)}deg)`;
+        }, 1000 / 60);
+      }
+    }, 10);
+  }
+};
+</script>
+
+</body>
+</html>
