@@ -224,12 +224,11 @@ window.onload = function() {
       if(rotateY >= angle && translateZ >= translateZTerminus) {
         clearInterval(time);
         dds[n].style.transform = 'rotateY(' + angle + 'deg) translateZ(' + translateZTerminus + 'px)';
-        if(n > 0)
-          deal(dds, n - 1);
-
+        if(n > 0) deal(dds, n - 1);
         const obj = getRotate();
         let rotY = obj.y;
-        setInterval(() => {
+        // 使用setInterval的时候，如果离开页面太久会变鬼畜
+        tsUtils.polling(() => {
           dl.style.transform = `rotateX(${obj.x}deg) rotateY(${(rotY += 0.1)}deg)`;
         }, 1000 / 60);
       }
