@@ -123,7 +123,7 @@
     <img src="http://v.bootstrapmb.com/2019/5/2g3s4997/img/t4.png"/>
   </dd>
 </dl>
-<script src="https://cdn.jsdelivr.net/npm/@mxssfd/ts-utils@2.11.21/lib-umd/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mxssfd/ts-utils/lib-umd/index.min.js"></script>
 <script>
 window.onload = function() {
   const dds = document.getElementsByTagName('dd');
@@ -176,14 +176,19 @@ window.onload = function() {
   tsUtils.onDragEvent((hook) => {
     let rotate = {x: 0, y: 0};
     hook.onDown(() => {
+      stopPolling && stopPolling();
       rotate = getRotate();
     });
     hook.onMove((e, currentXY, lastXY, downXY) => {
       let x = rotate.x - (currentXY.y - downXY.y);
       let y = rotate.y + (currentXY.x - downXY.x);
+      // 到边界的时候会卡顿一下
       if(!tsUtils.inRange(x, [-360, 360])) x %= 360;
       if(!tsUtils.inRange(y, [-360, 360])) y %= 360;
       dl.style.transform = "rotateX(" + x + "deg) rotateY(" + y + "deg)";
+    });
+    hook.onUp(() => {
+      startPolling();
     });
   });
 
@@ -211,6 +216,19 @@ window.onload = function() {
     };
   };*/
 
+  let stopPolling;
+
+  function startPolling() {
+    stopPolling && stopPolling();
+    const obj = getRotate();
+    let rotY = obj.y;
+    // 使用setInterval的时候，如果离开页面太久会变鬼畜
+    stopPolling = tsUtils.polling(() => {
+      rotY = (rotY + 0.1) % 360;
+      dl.style.transform = `rotateX(${obj.x}deg) rotateY(${(rotY)}deg)`;
+    }, 1000 / 60);
+  }
+
   function deal(dds, n) {
     const speed = 100;
     const translateZTerminus = 400;
@@ -225,12 +243,7 @@ window.onload = function() {
         clearInterval(time);
         dds[n].style.transform = 'rotateY(' + angle + 'deg) translateZ(' + translateZTerminus + 'px)';
         if(n > 0) deal(dds, n - 1);
-        const obj = getRotate();
-        let rotY = obj.y;
-        // 使用setInterval的时候，如果离开页面太久会变鬼畜
-        tsUtils.polling(() => {
-          dl.style.transform = `rotateX(${obj.x}deg) rotateY(${(rotY += 0.1)}deg)`;
-        }, 1000 / 60);
+        startPolling();
       }
     }, 10);
   }
