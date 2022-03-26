@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>修改css3变量测试</title>
+    <style>
+      :root {
+        --color: red;
+        color: var(--color);
+      }
+      .parent {
+        --color: blue; /*不会影响当前的颜色，除非再设置一次*/
+      }
+      .son {
+        color: var(--color);
+      }
+      .son:after {
+        content: attr(data-dt); /*通过attr读取属性上的data*/
+      }
+    </style>
+  </head>
+  <body>
+    <div class="parent">
+      parent
+      <div class="son" data-dt=" some after content">son</div>
+    </div>
+  </body>
+  <script>
+    /**
+     * @type {HTMLDivElement}
+     */
+    const p = document.querySelector('.parent');
+    // p.style['--color'] = 'yellow'; // 修改失败
+    // 修改css变量
+    p.style.setProperty('--color', 'pink');
+    // 也可以修改其他属性, 避免style.xxx设置
+    p.style.setProperty('font-size', '30px');
+  </script>
+</html>
