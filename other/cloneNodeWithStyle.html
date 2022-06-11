@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+    .wrapper .copy-target {
+      width: 100px;
+      height: 100px;
+      background: red;
+    }
+
+    .wrapper .copy-target ul {
+      list-style: square;
+    }
+
+    .wrapper .copy-target ul li {
+      background: pink;
+    }
+
+    .wrapper .copy-target ul li + li {
+      background: black;
+      color: white;
+    }
+
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="copy-target">
+    123
+    <ul>
+      <li>111</li>
+      <li>222</li>
+    </ul>
+  </div>
+</div>
+<script>
+  // 测试cloneNode是否带样式
+  (function () {
+        const dom = document.querySelector('.copy-target');
+        document.body.appendChild(dom.cloneNode(true));
+  })();
+  // 经测试：不会带样式
+</script>
+<script>
+  (function () {
+    /**
+     * @param {HTMLElement} node
+     * @param {boolean} deep
+     * @returns {Node}
+     */
+    function cloneNodeWithStyle(node, deep = false) {
+      const newNode = node.cloneNode(deep);
+
+      function setStyle(dom, style) {
+        let cssText = '';
+        const repReg = /^-|-([a-z])/g;
+        const repHandler = (_, b) => b ? b.toUpperCase() : '';
+
+        const len = style.length;
+        for (let i = 0; i < len; i++) {
+          const k = style[i];
+          const key = k.replace(repReg, repHandler);
+          cssText += `${k}:${style[key]};`;
+        }
+
+        dom.style.cssText = cssText;
+      }
+
+      /**
+       * @param {HTMLElement} node
+       * @param {any} newNode
+       */
+      function cloneStyle(node, newNode) {
+        const css = getComputedStyle(node, null);
+        setStyle(newNode, css);
+        if (!deep) return;
+        const children = node.children;
+        const newChildren = newNode.children;
+        if (children.length) {
+          for (let i = 0; i < children.length; i++) {
+            const child = children[i];
+            const newChild = newChildren[i];
+            cloneStyle(child, newChild);
+          }
+        }
+      }
+
+      cloneStyle(node, newNode);
+      return newNode;
+    }
+
+    const dom = document.querySelector('.copy-target');
+    const node = cloneNodeWithStyle(dom, true);
+//    const mask = document.createElement('div');
+//    mask.style.cssText = `
+//    position:fixed;
+//    left: 0;
+//    top: 0;
+//    right: 0;
+//    bottom: 0;
+//    background: black;
+//    opacity: 0.5;
+//    `;
+//    const css = dom.getBoundingClientRect();
+//    node.style.position = 'fixed';
+//    node.style.left = css.left + 'px';
+//    node.style.top = css.top + 'px';
+//    document.body.appendChild(mask)
+    document.body.appendChild(node);
+  })();
+</script>
+</body>
+</html>
